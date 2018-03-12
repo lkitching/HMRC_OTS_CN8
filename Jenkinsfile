@@ -3,26 +3,36 @@ pipeline {
       label 'master'
   }
   stages {
-    stage('Transform') {
-      agent {
+    stage('Fetch source') {
         docker {
           image 'cloudfluff/databaker'
           reuseNode true
         }
       }
       steps {
-        sh 'jupyter-nbconvert --to python --stdout Transform_CN8_Non-EU_cod_XXXX_to_WDA.ipynb | python'
+        sh 'jupyter-nbconvert --to python --stdout Fetch_sources.ipynb | python'
       }
     }
-    stage('Grafter test') {
+    stage('table2qb') {
+      steps {
+        sh "java -jar lib/table2qb-0.1.0-SNAPSHOT-standalone.jar build.clj"
+      }
+    }
+    stage('CSV2RDF') {
       agent {
         docker {
-          image 'cloudfluff/ons-wda-grafter'
+          image 'cloudfluff/rdf-tabular'
           reuseNode true
         }
       }
       steps {
-        sh 'grafter run ons-graft.import.pipeline/data-baker data/out/CN8_Non-EU_cod_2012.csv data/out/CN8_Non-EU_cod_2013.csv data/out/CN8_Non-EU_cod_2014.csv data/out/CN8_Non-EU_cod_2015.csv data/out/CN8_Non-EU_cod_2016.csv "ONS_BoP" data/out/CN8_Non-EU_cod_20XX.nq'
+        sh 'cp metadata/*.json out/'
+        sh 'rdf serialize --input-format tabular --output-format ttl in/CN8_Non-EU_cod_2012.csv > out/CN8_Non-EU_cod_2012.ttl'
+      }
+    }
+    stage('Test') {
+      steps {
+        sh 'java -cp bin/sparql uk.org.floop.sparqlTestRunner.Run -i -t tests/qb -r reports/TESTS-qb.xml out/CN8_Non-EU_cod_2012.ttl'
       }
     }
   }
