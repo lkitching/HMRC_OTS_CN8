@@ -4,6 +4,7 @@ pipeline {
   }
   stages {
     stage('Fetch source') {
+      agent {
         docker {
           image 'cloudfluff/databaker'
           reuseNode true
