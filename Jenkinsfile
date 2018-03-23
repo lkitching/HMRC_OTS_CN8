@@ -3,7 +3,12 @@ pipeline {
       label 'master'
   }
   stages {
-    stage('Fetch source') {
+    stage('Clean') {
+      steps {
+        sh 'rm -rf out'
+      }
+    }
+    stage('Prepare source') {
       agent {
         docker {
           image 'cloudfluff/databaker'
@@ -32,7 +37,7 @@ pipeline {
           for (table in ["components", "countries", "component-specifications", "dataset",
                          "data-structure-definition", "observations", "used-codes-codelists",
                          "used-codes-codes"]) {
-            sh 'rdf serialize --input-format tabular --output-format ttl out/${table}.json > out/${table}.ttl'
+            sh "rdf serialize --input-format tabular --output-format ntriples out/${table}.json > out/${table}.nt"
           }
         }
       }

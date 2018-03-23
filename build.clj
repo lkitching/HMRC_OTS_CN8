@@ -2,4 +2,4 @@
 (ns table2qb.core)
 (components-pipeline "metadata/components.csv" "out")
 (codelist-pipeline "pre/countries.csv" "out" "Countries" "countries")
-(data-pipeline "pre/CN8_Non-EU_cod_2012.csv" "out" "HMRC Overseas Trade by CN8" "hmrc-ots-cn8")
+(data-pipeline "pre/CN8_Non-EU_cod_2012-2016.csv" "out" "HMRC Overseas Trade by CN8" "hmrc-ots-cn8")
