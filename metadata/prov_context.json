@@ -15,5 +15,6 @@
   "wasGeneratedBy": { "@type": "@id", "@id": "prov:wasGeneratedBy" },
   "startedAtTime": { "@type": "xsd:dateTime", "@id": "prov:startedAtTime" },
   "endedAtTime": { "@type": "xsd:dateTime", "@id": "prov:endedAtTime" },
-  "label": "rdfs:label"
+  "label": "rdfs:label",
+  "comment": "rdfs:comment"
 }
