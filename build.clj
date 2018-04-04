@@ -10,10 +10,10 @@
 ;; https://www.w3.org/2001/sw/wiki/PROV-FAQ#How_can_I_define_a_sub_activity.3F
 (def prov-activity
   {
-   "@id" (or (environ/env :build-url) "unknown-build"),
+   "@id" (str (or (environ/env :build-url) "unknown-build") "#table2qb"),
    "@type" "activity",
    "startedAtTime" (str (java.time.LocalDateTime/now)),
-   "label" (or (environ/env :job-name) "unknown-job"),
+   "label" "table2qb",
    })
 
 
