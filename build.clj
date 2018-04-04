@@ -40,8 +40,8 @@
 (def inout
   (reduce (fn [res1 res2] [(concat (first res1) (first res2)) (concat (first (rest res1)) (first (rest res2)))])
           [(components-pipeline-prov "metadata/components.csv" "out")
-           (codelist-pipeline-prov "pre/countries.csv" "out" "Countries" "countries")
-           (data-pipeline-prov "pre/CN8_Non-EU_cod_2012-2016.csv" "out" "HMRC Overseas Trade by CN8" "hmrc-ots-cn8")
+           (codelist-pipeline-prov "out/prep/countries.csv" "out" "Countries" "countries")
+           (data-pipeline-prov "out/prep/CN8_Non-EU_cod_2012-2016.csv" "out" "HMRC Overseas Trade by CN8" "hmrc-ots-cn8")
            ]))
 
 (def prov-sources
