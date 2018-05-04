@@ -1,51 +1,54 @@
 pipeline {
-  agent {
-      label 'master'
-  }
-  stages {
-    stage('Clean') {
-      steps {
-        sh 'rm -rf out'
-      }
+    agent {
+        label 'master'
     }
-    stage('Prepare source') {
-      agent {
-        docker {
-          image 'cloudfluff/databaker'
-          reuseNode true
+    stages {
+        stage('Clean') {
+            steps {
+                sh 'rm -rf out'
+            }
         }
-      }
-      steps {
-        sh 'jupyter-nbconvert --to python --stdout Prepare_sources.ipynb | python'
-      }
-    }
-    stage('table2qb') {
-      steps {
-        sh "java -jar lib/table2qb-0.1.1-SNAPSHOT-standalone.jar build.clj"
-      }
-    }
-    stage('CSV2RDF') {
-      agent {
-        docker {
-          image 'cloudfluff/rdf-tabular'
-          reuseNode true
+        stage('Prepare source') {
+            agent {
+                docker {
+                    image 'cloudfluff/databaker'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh 'jupyter-nbconvert --to python --stdout Prepare_sources.ipynb | python'
+            }
         }
-      }
-      steps {
-        script {
-          for (table in ["components", "countries", "component-specifications", "dataset",
-                         "data-structure-definition", "observations", "used-codes-codelists",
-                         "used-codes-codes"]) {
-            sh "rdf serialize --input-format tabular --output-format ntriples out/${table}.json > out/${table}.nt"
-          }
+        stage('Upload draftset') {
+            steps {
+                script {
+                    def PMD = 'https://production-drafter-ons-alpha.publishmydata.com'
+                    def credentials = 'onspmd'
+                    def drafts = drafter.listDraftsets baseUrl: PMD, credentials: credentials, include: 'owned'
+                    def jobDraft = drafts.find  { it['display-name'] == env.JOB_NAME }
+                    if (jobDraft) {
+                        drafter.deleteDraftset baseUrl: PMD, credentials: credentials, id: jobDraft.id
+                    }
+                    def newJobDraft = drafter.createDraftset baseUrl: PMD, credentials: credentials, label: env.JOB_NAME
+                    echo "Finish me"
+                }
+            }
         }
-      }
+        stage('Test Draftset') {
+            steps {
+                echo 'Placeholder for acceptance tests from e.g. GDP-205'
+            }
+        }
+        stage('Publish') {
+            steps {
+                echo "Placeholder"
+            }
+        }
     }
-  }
-  post {
-    always {
-      archiveArtifacts 'out/**'
-      archiveArtifacts 'metadata/*'
+    post {
+        always {
+            archiveArtifacts 'out/**'
+            archiveArtifacts 'metadata/*'
+        }
     }
-  }
 }
