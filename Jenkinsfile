@@ -83,7 +83,6 @@ pipeline {
     post {
         always {
             archiveArtifacts 'out/**'
-            archiveArtifacts 'metadata/*'
         }
     }
 }
