@@ -19,6 +19,5 @@
         dct:publisher        <https://www.gov.uk/government/organisations/hm-revenue-customs> ;
         dct:references       <http://gss-data.org.uk/help> ;
         dct:title            "HMRC Overseas Trade Statistics"@en ;
-        qb:structure         <http://gss-data.org.uk/data/hmrc-overseas-trade-statistics/structure> ;
         void:sparqlEndpoint  <http://gss-data.org.uk/sparql> .
 }
