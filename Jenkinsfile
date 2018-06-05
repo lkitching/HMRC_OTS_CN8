@@ -22,7 +22,11 @@ pipeline {
         stage('Upload draftset') {
             steps {
                 script {
-                    uploadDraftset('HMRC Overseas Trade Statistics', ['out/CN8_Non-EU_cod_2012-2016.csv'])
+                    def csvs = []
+                    for (def file : findFiles(glob: 'out/*.csv')) {
+                        csvs.add("out/${file.name}")
+                    }
+                    uploadDraftset('HMRC Overseas Trade Statistics', csvs)
                 }
             }
         }
