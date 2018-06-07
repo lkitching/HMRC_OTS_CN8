@@ -32,7 +32,22 @@ pipeline {
         }
         stage('Test Draftset') {
             steps {
-                echo 'Placeholder for acceptance tests from e.g. GDP-205'
+                script {
+                    configFileProvider([configFile(fileId: 'pmd', variable: 'configfile')]) {
+                        def config = readJSON(text: readFile(file: configfile))
+                        String PMD = config['pmd_api']
+                        String credentials = config['credentials']
+                        def drafts = drafter.listDraftsets(PMD, credentials, 'owned')
+                        def jobDraft = drafts.find  { it['display-name'] == env.JOB_NAME }
+                        if (jobDraft) {
+                            withCredentials([usernameColonPassword(credentialsId: 'ons', variable: 'USERPASS')]) {
+                                sh "java -cp lib/sparql.jar uk.org.floop.sparqlTestRunner.Run -i -s https://production-drafter-ons-alpha.publishmydata.com/v1/sparql/live -u \'${USERPASS}\'"
+                            }
+                        } else {
+                            error "Expecting a draftset for this job."
+                        }
+                    }
+                }
             }
         }
         stage('Publish') {
@@ -46,6 +61,7 @@ pipeline {
     post {
         always {
             archiveArtifacts 'out/**'
+            junit 'reports/**/*.xml'
         }
     }
 }
