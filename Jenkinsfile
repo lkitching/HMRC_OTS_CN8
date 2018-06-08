@@ -25,7 +25,6 @@ pipeline {
                     def csvs = []
                     for (def file : findFiles(glob: 'out/*.csv')) {
                         csvs.add("out/${file.name}")
-                        break
                     }
                     uploadDraftset('HMRC Overseas Trade Statistics', csvs)
                 }
