@@ -2,7 +2,7 @@
 PREFIX qb:   <http://purl.org/linked-data/cube#>
 PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
-SELECT *
+SELECT DISTINCT ?geography
 WHERE {
   ?obs qb:dataSet <http://gss-data.org.uk/data/hmrc-overseas-trade-statistics>;
        <http://gss-data.org.uk/def/dimension/trade-partner-geography> ?geography;

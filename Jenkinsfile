@@ -25,6 +25,7 @@ pipeline {
                     def csvs = []
                     for (def file : findFiles(glob: 'out/*.csv')) {
                         csvs.add("out/${file.name}")
+                        break
                     }
                     uploadDraftset('HMRC Overseas Trade Statistics', csvs)
                 }
@@ -40,8 +41,8 @@ pipeline {
                         def drafts = drafter.listDraftsets(PMD, credentials, 'owned')
                         def jobDraft = drafts.find  { it['display-name'] == env.JOB_NAME }
                         if (jobDraft) {
-                            withCredentials([usernameColonPassword(credentialsId: 'ons', variable: 'USERPASS')]) {
-                                sh "java -cp lib/sparql.jar uk.org.floop.sparqlTestRunner.Run -i -s https://production-drafter-ons-alpha.publishmydata.com/v1/sparql/live -u \'${USERPASS}\'"
+                            withCredentials([usernameColonPassword(credentialsId: credentials, variable: 'USERPASS')]) {
+                                sh "java -cp lib/sparql.jar uk.org.floop.sparqlTestRunner.Run -i -s ${PMD}/v1/draftset/${jobDraft}/query?union-with-live=true -u \'${USERPASS}\'"
                             }
                         } else {
                             error "Expecting a draftset for this job."
